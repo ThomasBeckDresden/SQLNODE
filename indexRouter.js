@@ -36,4 +36,17 @@ app.get("/", (req, res) => {
     .then((data) => res.json(data.rows))
     .catch((err) => res.sendStatus(500));
 });
+
+app.get("/:id", (req, res) => {
+  const id = req.params.id;
+  const getOneUser = {
+    text: "SELECT * FROM users WHERE id=$1;",
+    values: [id],
+  };
+  pool
+    .query(getOneUser)
+    .then((data) => res.json(data.rows))
+    .catch((err) => res.sendStatus(500));
+});
+
 module.exports = indexRouter;
