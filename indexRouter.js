@@ -30,14 +30,14 @@ app.get("/time", (req, res) => {
     .catch((err) => res.sendStatus(500));
 });
 
-app.get("/", (req, res) => {
+app.get("/users", (req, res) => {
   pool
     .query("SELECT * FROM users")
     .then((data) => res.json(data.rows))
     .catch((err) => res.sendStatus(500));
 });
 
-app.get("/:id", (req, res) => {
+app.get("/users/:id", (req, res) => {
   const id = req.params.id;
   const getOneUser = {
     text: "SELECT * FROM users WHERE id=$1;",
@@ -49,7 +49,7 @@ app.get("/:id", (req, res) => {
     .catch((err) => res.sendStatus(500));
 });
 
-app.post("/", (req, res) => {
+app.post("/user", (req, res) => {
   console.log(req.body);
   const { first_name, last_name, age } = req.body;
   const postOneUser = {
@@ -64,7 +64,7 @@ app.post("/", (req, res) => {
     .catch((err) => res.sendStatus(500));
 });
 
-app.put("/:id", (req, res) => {
+app.put("/users/:id", (req, res) => {
   console.log(req.body);
   console.log(req.params.id);
   const id = req.params.id;
@@ -83,5 +83,25 @@ app.put("/:id", (req, res) => {
     .catch((err) => res.sendStatus(500));
 });
 
-app.delete("/:id", (req, res) => {});
+app.delete("/users/:id", (req, res) => {
+  const id = req.params.id;
+  const deleteOneUser = {
+    text: `
+    DELETE FROM users
+    WHERE id=$1
+    RETURNING *;
+    `,
+    values: [id],
+  };
+  pool
+    .query(deleteOneUser)
+    .then((data) => {
+      if (!data.rows.length) {
+        return res.status(404).send("Nothing here");
+      }
+      return res.status(200).send(data.rows);
+    })
+
+    .catch((err) => res.sendStatus(500));
+});
 module.exports = indexRouter;
