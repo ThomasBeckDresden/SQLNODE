@@ -1,9 +1,21 @@
 const express = require("express");
 const app = express();
+app.use(express.json());
 const indexRouter = express.Router();
-const { Pool } = require("pg");
 
+const { Pool } = require("pg");
 const pool = new Pool();
+
+app.use(express.json());
+const port = 3000;
+
+app.listen(port, () => {
+  console.log("listening");
+});
+
+app.get("/exercise", (req, res) => {
+  res.status(200).send("Hi there");
+});
 
 app.get("/time", (req, res) => {
   // pool.query("SELECT NOW()", (err, data) => {
@@ -18,15 +30,10 @@ app.get("/time", (req, res) => {
     .catch((err) => res.sendStatus(500));
 });
 
-app.use(express.json());
-const port = 3000;
-
-app.listen(port, () => {
-  console.log("listening");
+app.get("/", (req, res) => {
+  pool
+    .query("SELECT * FROM users")
+    .then((data) => res.json(data.rows))
+    .catch((err) => res.sendStatus(500));
 });
-
-app.get("/exercise", (req, res) => {
-  res.status(200).send("Hi there");
-});
-
 module.exports = indexRouter;
