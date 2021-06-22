@@ -49,4 +49,22 @@ app.get("/:id", (req, res) => {
     .catch((err) => res.sendStatus(500));
 });
 
+app.post("/", (req, res) => {
+  console.log(req.body);
+  const { first_name, last_name, age } = req.body;
+  const postOneUser = {
+    text: "INSERT INTO users (first_name, last_name, age) VALUES ($1,$2,$3);",
+    values: [first_name, last_name, age],
+  };
+  pool
+    .query(postOneUser)
+    .then((data) => res.send(data))
+    .catch((err) => res.sendStatus(500));
+});
+
+app.put("/:id", (req, res) => {
+  const id = req.params.id;
+});
+
+app.delete("/:id", (req, res) => {});
 module.exports = indexRouter;
